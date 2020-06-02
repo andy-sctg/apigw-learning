@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform:
+- AWS::Serverless-2016-10-31
+
+Description: astocchetti-test
+
+Resources:
+  Api:
+    Type: AWS::Serverless::Api
+    DependsOn:
+    - TxApiLambda
+    Properties:
+      StageName: v1
+      Cors: "'*'"
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: openapi.yml
+
+
+  InvokeApiPermission:
+    Type: "AWS::Lambda::Permission"
+    DependsOn:
+    - TxApiLambda
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref TxApiLambda
+      Principal: apigateway.amazonaws.com
+
+  TxApiLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      MemorySize: 512
+      Timeout: 30
+      Runtime: nodejs12.x
+      CodeUri: ./
+      Tracing: PassThrough
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambdaVPCAccessExecutionRole
+      Events:
+        TxApiEvents:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /*
+            Method: any

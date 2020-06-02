@@ -1,0 +1,47 @@
+swagger: '2.0'
+info:
+  version: '1.0'
+  title:
+    Fn::Sub: 'LMS API - ${Environment}'
+  description: 'Locker Management System API'
+x-amazon-apigateway-binary-media-types:
+  - "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  - "application/vnd.ms-excel"
+  - "application/octet-stream"
+  - "image/jpeg"
+  - "multipart/form-data"
+paths:
+  /:
+    x-amazon-apigateway-any-method:
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${TxApiLambda.Arn}/invocations
+      responses: {}
+  /{proxy+}:
+    x-amazon-apigateway-any-method:
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${TxApiLambda.Arn}/invocations
+      responses: {}
+  /analytics/report:
+    get:
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        contentHandling: "CONVERT_TO_BINARY" # IMPORTANT!
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${TxApiLambda.Arn}/invocations
+      responses: {}
+  /analytics/report/{proxy+}:
+    get:
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        contentHandling: "CONVERT_TO_BINARY" # IMPORTANT!
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${TxApiLambda.Arn}/invocations
+      responses: {}
